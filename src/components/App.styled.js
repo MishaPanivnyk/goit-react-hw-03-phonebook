@@ -23,3 +23,8 @@ export const SubTitle = styled.h2`
   font-weight: 500;
   font-size: 30px;
 `;
+export const Message = styled.p`
+  margin-left: 20px;
+  font-size: 16px;
+  font-weight: 400;
+`;

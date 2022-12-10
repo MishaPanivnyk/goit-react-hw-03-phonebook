@@ -4,7 +4,7 @@ import { ContactForm } from 'components/ContactForm/ContactForm';
 import { ContactList } from 'components/ContactList/ContactList';
 import { Filter } from 'components/Filter/Filter';
 
-import { Container, Title, SubTitle } from 'components/App.styled';
+import { Container, Title, SubTitle, Message } from 'components/App.styled';
 
 import { nanoid } from 'nanoid';
 
@@ -32,11 +32,6 @@ export class App extends Component {
     }
   }
   addContact = ({ name, number }) => {
-    const contact = {
-      id: nanoid(),
-      name,
-      number,
-    };
     if (
       this.state.contacts.some(
         contact => contact.name.toLowerCase() === name.toLowerCase()
@@ -44,16 +39,20 @@ export class App extends Component {
     ) {
       return alert(`${contact.name} is already in contacts.`);
     }
-
+    const contact = {
+      id: nanoid(),
+      name,
+      number,
+    };
     this.setState(prevState => ({
       contacts: [contact, ...prevState.contacts],
     }));
   };
 
-  changeFilter = e => {
-    const { filter, value } = e.currentTarget;
-    // console.log(name);
-    this.setState({ [filter]: value });
+  changeFilter = event => {
+    this.setState({
+      filter: event.currentTarget.value,
+    });
   };
 
   getVisibleContacts = () => {
@@ -69,9 +68,15 @@ export class App extends Component {
       contacts: prevState.contacts.filter(contact => contact.id !== contactId),
     }));
   };
-
+  getFilterContacts = () => {
+    const normalizedFilter = this.state.filter.toLowerCase();
+    return this.state.contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+  };
   render() {
     const { filter } = this.state;
+    const contacts = this.getFilterContacts();
     const visibleContacts = this.getVisibleContacts();
     // console.log(this.state);
 
@@ -81,6 +86,7 @@ export class App extends Component {
         <ContactForm onContact={this.addContact} />
         <SubTitle>Contacts</SubTitle>
         <Filter value={filter} onChange={this.changeFilter} />
+        {contacts.length === 0 && <Message>There is not any contacts</Message>}
         <ContactList
           contacts={visibleContacts}
           onDeleteContact={this.deleteContacts}
